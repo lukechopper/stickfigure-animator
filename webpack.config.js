@@ -29,6 +29,13 @@ module.exports = {
     },
     output: {
         filename: "app.bundle.js",
-        path: path.resolve(__dirname, 'dist')
-    }
+        path: path.resolve(__dirname, 'public')
+    },
+    devServer: {
+        static: {
+            directory: path.join(__dirname, 'public'),
+        },
+        compress: true,
+        hot: true
+      },
 }
