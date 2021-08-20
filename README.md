@@ -10,7 +10,7 @@ git remote remove origin
 npm install
 ```
 
-## Watch entry file
+## Run dev server
 ```
 npm run watch
 ```
