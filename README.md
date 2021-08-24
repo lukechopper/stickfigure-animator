@@ -1,6 +1,6 @@
 # simple-webpack-boilerplate-by-qixotl
 #### ES6 compiled with Babel and css-style loader.
-#### A very simple implementation of webpack, designed for HTML files that want to serve bundled JavaScript files compiled by webpack and not for building SPA's or very large applications.
+#### A very simple implementation of webpack. Designed for HTML files that want to serve bundled JavaScript files compiled by webpack, and not for building SPA's or very large applications.
 
 ## Install
 ```
