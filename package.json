@@ -151,6 +151,13 @@
     "wildcard": "^2.0.0",
     "yocto-queue": "^0.1.0"
   },
+  "browserslist": [
+    "> 0.3%",
+    "last 7 versions",
+    "Android >= 4", 
+    "Firefox >= 20", 
+    "iOS >= 8"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server --mode=development",
