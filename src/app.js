@@ -7,8 +7,8 @@ function animate(){
     requestAnimationFrame(animate);
     clearCheckPointTracker();
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    drawFrameNum();
     drawUi();
+    drawFrameNum();
 
     checkCheckPointTracker();
 }
