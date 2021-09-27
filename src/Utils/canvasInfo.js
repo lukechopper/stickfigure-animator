@@ -1,4 +1,5 @@
-import {moveUI, checkToSeeIfThereIsAnOverlappingCircle} from '../UI';
+import {moveUI} from '../UI';
+import {changePreAnimationTask} from '../app';
 
 export const canvas = document.getElementById('canvas');
 export const ctx = canvas.getContext('2d');
@@ -7,9 +8,7 @@ function resizeCanvas(){
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     moveUI();
-    setTimeout(() => {
-        checkToSeeIfThereIsAnOverlappingCircle();
-    }, 10);
+    changePreAnimationTask(['CHECK_OVERLAPPING_CIRCLE', 'DELETE_ONE_CIRCLE']);
     numberOfBallsPerWindow();
 }
 resizeCanvas();

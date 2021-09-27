@@ -43,7 +43,6 @@ export function ArcFill(startingPoint, radius, label){
         if((this.startingPoint.x + this.radius) > canvas.width - 65 || (this.startingPoint.x - this.radius) <  65){
             overlap = true;
         }
-        
         if(mousePos.x < canvas.width - 65 && mousePos.x >  65){
             pushToCheckPointTracker({checked: inside, label: this.label, overlap, canClick: true});
         }else{
