@@ -3,33 +3,35 @@ import {GUIPath, ArcFill, ScrollBarStroke} from './UI/GUIObject';
 import {mousePos} from './Utils/mouseMovement';
 import {percentageRange} from './Utils/mathFunctions';
 import {trashCanImg, pauseNormalImg, pauseSelectedImg, playNormalImg, playSelectedImg, reverseNormalImg, reverseSpecialImg} from './data/images';
-import regeneratorRuntime from "regenerator-runtime";
-import { changePreAnimationTask, changeBeforeAnimationTask } from './app';
+import {changeAnimationTask } from './Utils/animationTask';
+import {AnimationTask, AnimationTaskDirection} from './data/enums';
 
-let currentFrameNum = 1;
-
-export function drawFrameNum(){
+let currentFrameNum:number = 1;
+//So that the user can see what frame they are currently on at the top left of the screen
+export function drawFrameNum():void{
     ctx.font = '70px Arial';
     ctx.fillStyle = 'black';
-    let numOfDigits = currentFrameNum.toString().length;
+    let numOfDigits:number = currentFrameNum.toString().length;
     ctx.fillText(currentFrameNum.toString(), canvas.width - (60 + ((numOfDigits - 1) * 40)), 80);
 }
 
-let checkPointTracker = []; //Format {checked, label}
-export function pushToCheckPointTracker(objToPush){
+interface checkPoint {checked:boolean,label:string, overlap?:boolean, canClick?:boolean};
+
+let checkPointTracker:Array<checkPoint> = [];
+export function pushToCheckPointTracker(objToPush:checkPoint){
     checkPointTracker.push(objToPush);
 }
 
-let numOfCircles = 24;
-let circlePos = 110, mouseDiffX = null, movedAway = 0;
+let numOfCircles:number = 24;
+let circlePos:number = 110, mouseDiffX:number = null, movedAway:number = 0;
 
-export function circlesExpandedMoveScroll(){
-    let progress = Math.abs(circlePos - 110);
-    let lastValue = Math.abs(((canvas.width - 109) - ((numOfCircles - 1) * 74)) - 110);
+export function circlesExpandedMoveScroll():void{
+    let progress:number = Math.abs(circlePos - 110);
+    let lastValue:number = Math.abs(((canvas.width - 109) - ((numOfCircles - 1) * 74)) - 110);
     showScrollBar(progress / lastValue);
 }
 
-export function moveUI(moveManually = null){
+export function moveUI(moveManually:number = null):void{
     if(!drawUIBeenCalled) return;
     if(moveManually !== null){
         circlePos = moveManually;
@@ -48,9 +50,9 @@ export function moveUI(moveManually = null){
     movedAway = 110 - circlePos;
 }
 
-let drawUIBeenCalled = false;
-let circleStore = [];
-export function drawUi(){
+let drawUIBeenCalled:boolean = false;
+let circleStore:Array<ArcFill> = [];
+export function drawUi():void{
     //drawing circles
     circleStore = [];
     if(mouseState === 'BUTTONS'){
@@ -59,7 +61,7 @@ export function drawUi(){
     for(let i = 1; i <= numOfCircles; i++){
         circleStore.push(new ArcFill({x: circlePos + ((i - 1) * 74), y: canvas.height - 50}, 30, 'circle-'+i));
     }
-    circleStore.forEach((circle, i) => {
+    circleStore.forEach((circle:ArcFill, i:number) => {
         if(currentFrameNum === i + 1){
             circle.selected = true;
         }else{
@@ -90,9 +92,9 @@ export function drawUi(){
     drawUIBeenCalled = true;
 }
 
-export function checkCheckPointTracker(){ //Check to see if cursor should be a pointer or not
-    let haveFoundCheck = false;
-    checkPointTracker.forEach(check => {
+export function checkCheckPointTracker():void{ //Check to see if cursor should be a pointer or not
+    let haveFoundCheck:boolean = false;
+    checkPointTracker.forEach((check:checkPoint):void => {
         if(haveFoundCheck) return;
         if(check.checked){
             haveFoundCheck = true;
@@ -103,13 +105,13 @@ export function checkCheckPointTracker(){ //Check to see if cursor should be a p
     });
 }
 
-export function clearCheckPointTracker(){ //Called at the start of repeated function
+export function clearCheckPointTracker():void{ //So that each frame as triggered in the main app file begins with a clear Array
     checkPointTracker = [];
 }
 
-let scrollBarPos = 85, scrollDiffX = null, scrollAway = 0;
-let deleteBall = false; //For the deletion of keyframaes
-function showScrollBar(forcePos = null){
+let scrollBarPos:number = 85, scrollDiffX:number = null, scrollAway:number = 0;
+let deleteBall:boolean = false; //For the deletion of keyframaes
+function showScrollBar(forcePos:number = null){
     if(isThereCircleOverlap){
         if((mousePos.y > canvas.height - 85) || mouseState === 'SCROLLBAR' || deleteBall){
                 let numberOfBallsPerWindow = returnNumberOfBallsPerWindow(), percentageBallsOnScreen =  numberOfBallsPerWindow / numOfCircles;
@@ -171,7 +173,7 @@ const drawDeleteCan = drawDeleteCanFunc();
 let playControlState = 'PAUSE';
 function drawPlayControlsFunc(){
     let imageProportion = {width: 0, height: 0};
-    let image = null;
+    let image:HTMLImageElement = null;
     return () => {
         if(imageProportion.width === 0){
             imageProportion = {width: pauseNormalImg.width / 2.5, height: pauseNormalImg.height / 2.5};
@@ -236,9 +238,11 @@ export function deleteOneCircle(){
     circlesExpandedMoveScroll();
 };
 
+let isMouseDown:boolean = false;
 let mouseState = 'DEF', isThereCircleOverlap = false;
 addEventListener('mousedown', async e => {
     if(e.button === 0){
+        isMouseDown = true;
         let leftGuiBtn = checkPointTracker.find(check => check.label === 'leftGuiBtn');
         if(leftGuiBtn.checked){
             if(currentFrameNum > 1){
@@ -250,7 +254,7 @@ addEventListener('mousedown', async e => {
         if(rightGuiBtn.checked){
             if(currentFrameNum + 1 > numOfCircles){
                 numOfCircles++; //Need to render more circles to the GUI
-                changePreAnimationTask(['CIRCLES_EXPAND_MOVE_SCROLL']);
+                changeAnimationTask(AnimationTaskDirection.AFTER, AnimationTask.CIRCLES_EXPAND_MOVE_SCROLL);
             }
             currentFrameNum++;
             return;
@@ -276,10 +280,10 @@ addEventListener('mousedown', async e => {
                 if(isThereCircleOverlap){
                     let endCircle = circleStore[numOfCircles - 1];
                     if(endCircle.startingPoint.x + endCircle.radius < canvas.width - 20){
-                        changeBeforeAnimationTask(['MOVE_ONE_CIRCLE']);
-                        changePreAnimationTask(['CHECK_OVERLAPPING_CIRCLE']);
+                        changeAnimationTask(AnimationTaskDirection.BEFORE, AnimationTask.MOVE_ONE_CIRCLE);
+                        changeAnimationTask(AnimationTaskDirection.AFTER, AnimationTask.CHECK_OVERLAPPING_CIRCLE);
                     }else{
-                        changePreAnimationTask(['CHECK_OVERLAPPING_CIRCLE', 'DELETE_ONE_CIRCLE']);
+                        changeAnimationTask(AnimationTaskDirection.AFTER, [AnimationTask.CHECK_OVERLAPPING_CIRCLE, AnimationTask.DELETE_ONE_CIRCLE]);
                     }
                 }
             }
@@ -296,13 +300,12 @@ addEventListener('mousedown', async e => {
                 playControlState = 'PAUSE';
             }
         }
-        let oldMousePos = mousePos.x;
-        await new Promise(resolve => { //Wait so that drag works properly
+        await new Promise<void>(resolve => { //Wait so that drag works properly
             setTimeout(() => {
                 resolve();
             }, 90);
         });
-        if(oldMousePos !== mousePos.x) return;
+        if(isMouseDown) return;
         let regex = new RegExp('circle-', 'ig'), clickedCircle = checkPointTracker.find(check => check.checked && regex.test(check.label));
         if(clickedCircle){
             if(clickedCircle.canClick){
@@ -326,6 +329,7 @@ export function checkToSeeIfThereIsAnOverlappingCircle(){
 
 addEventListener('mouseup', e => {
     if(e.button === 0){
+        isMouseDown = false;
         mouseState = 'DEF';
     }
 });

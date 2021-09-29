@@ -1,9 +1,9 @@
 const path = require('path');
 
 module.exports = {
-    entry: './src/app.js',
+    entry: './src/app',
     resolve: {
-        extensions: ['.js']
+        extensions: ['.tsx', '.ts', '.js']
     },
     module: {
         rules: [
@@ -24,6 +24,11 @@ module.exports = {
                     'css-loader',
                     'postcss-loader'
                 ]
+            },
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
             }
         ]
     },
