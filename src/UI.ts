@@ -113,7 +113,7 @@ let scrollBarPos:number = 85, scrollDiffX:number = null, scrollAway:number = 0;
 let deleteBall:boolean = false; //For the deletion of keyframaes
 function showScrollBar(forcePos:number = null){
     if(isThereCircleOverlap){
-        if((mousePos.y > canvas.height - 85) || mouseState === 'SCROLLBAR' || deleteBall){
+        if((mousePos.y > canvas.height - 85) || mouseState === 'SCROLLBAR' || mouseState === 'BUTTONS' || deleteBall){
                 let numberOfBallsPerWindow = returnNumberOfBallsPerWindow(), percentageBallsOnScreen =  numberOfBallsPerWindow / numOfCircles;
                 let fullWidthOfScrollBar = (canvas.width - 80) - 85, newWidth = fullWidthOfScrollBar * percentageBallsOnScreen;
                 if(newWidth <= 21) newWidth = 21;

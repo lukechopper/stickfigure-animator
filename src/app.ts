@@ -32,6 +32,6 @@ export function loadImages():void{
     animate();
 }
 
-addEventListener('mousemove', (e:MouseEvent)=>{
+addEventListener('mousemove', (e:MouseEvent):void=>{
     handleMouseMove(e);
 });
